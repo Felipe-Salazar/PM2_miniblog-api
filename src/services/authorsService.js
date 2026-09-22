@@ -1,5 +1,4 @@
-const { get } = require('../app');
-const pool = require('../db/pool');
+import pool from '../db/pool.js';
 
 // Lista de autores
 async function listAuthors() {
@@ -32,7 +31,7 @@ async function updateAuthor (id, name, email, bio) {
 // Eliminar autor por ID
 async function deleteAuthor(id) {
     const resultado = await pool.query('DELETE FROM authors WHERE id = $1 RETURNING *', [id]);
-    return resultados.rows[0];
+    return resultado.rows[0];
 }
 
-module.exports = { listAuthors, getAuthorById, createAuthor, updateAuthor, deleteAuthor };
+export { listAuthors, getAuthorById, createAuthor, updateAuthor, deleteAuthor };

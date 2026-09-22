@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { listAuthors, getAuthorById, createAuthor, updateAuthor, deleteAuthor } = require('../services/authorsService');
+import { listAuthors, getAuthorById, createAuthor, updateAuthor, deleteAuthor } from '../services/authorsService.js';
 
 // Obtener Autores GET
 router.get('/', async function(req, res) {
@@ -69,7 +69,7 @@ router.put('/:id', async function(req, res) {
         const autorAutualizado = await updateAuthor(req.params.id, name, email, bio);
 
         if(!autorAutualizado) {
-            return res.status(404).json({ error: 'Fallo al obtener ese autor'})
+            return res.status(404).json({ error: 'Fallo al localizar ese autor'})
         }
 
         res.json(autorAutualizado);
@@ -98,4 +98,4 @@ router.delete('/:id', async function (req, res) {
     }
 })
 
-module.exports = router;
+export default router;

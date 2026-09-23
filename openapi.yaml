@@ -1,0 +1,283 @@
+openapi: 3.0.0
+info:
+  title: MiniBlog API
+  description: API REST para gestionar autores y publicaciones de MiniBlog.
+  version: 1.0.0
+  contact:
+    name: Felipe Salazar
+    email: felipesalazarcruz4@gmail.com
+servers:
+  - url: http://localhost:3000
+    description: Servidor local
+
+paths:
+  /authors:
+    get:
+      summary: Listar todos los autores
+      responses:
+        "200":
+          description: Lista de autores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Author"
+    post:
+      summary: Crear un nuevo autor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthorInput"
+      responses:
+        "201":
+        description: Autor creado
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Author"
+        "400":
+          description: Datos inválidos o email duplicado
+
+  /authors/{id}:
+    get:
+      summary: Obtener un autor por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Autor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+        "404":
+          description: Autor no encontrado
+    put:
+      summary: Actualizar un autor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthorInput"
+      responses:
+        "200":
+          description: Autor actualizado
+        "400":
+          description: Datos inválidos o email duplicado
+        "404":
+          description: Autor no encontrado
+    delete:
+      summary: Eliminar un autor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Autor eliminado (Borrar sus posts por CASCADE)
+        "404":
+          description: Autor no encontrado
+
+  /posts:
+    get:
+      summary: Listar todos los posts
+      responses:
+        "200":
+          description: Lista de posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+    post:
+      summary: Crear un nuevo post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostInput"
+      responses:
+        "201":
+          description: Post creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          description: Datos inválidos o author_id inexistente
+
+  /posts/{id}:
+    get:
+      summary: Obtener un post por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Post encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post no encontrado
+    put:
+      summary: Actualizar un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdateInput"
+      responses:
+        "200":
+          description: Post actualizado
+        "400":
+          description: Datos inválidos
+        "404":
+          description: Post no encontrado
+    delete:
+      summary: Eliminar un post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Post eliminado
+        "404":
+          description: Post no encontrado
+
+  /posts/author/{authorId}:
+    get:
+      summary: Listar posts de un autor específico, con datos del autor incluidos
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de posts del autor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostWithAuthor"
+
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    AuthorInput:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        author_id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        published:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    PostInput:
+      type: object
+      required:
+        - author_id
+        - title
+        - content
+      properties:
+        author_id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        published:
+          type: boolean
+
+    PostUpdateInput:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        published:
+          type: boolean
+
+    PostWithAuthor:
+      allOf:
+        - $ref: "#/components/schemas/Post"
+        - type: object
+          properties:
+            author_name:
+              type: string
+            author_email:
+              type: string

@@ -3,6 +3,7 @@ import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import authorsRouter from './routes/authors.js';
 import postsRouter from './routes/posts.js';
+import commentsRouter from './routes/comments.js';
 
 const swaggerDocument = YAML.load('./openapi.yaml');
 
@@ -15,6 +16,8 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/authors', authorsRouter);
 
 app.use('/posts', postsRouter);
+
+app.use('/comments', commentsRouter);
 
 app.get('/', function(req, res) {
     res.json({ mensaje: 'API MiniBlog funcionando' });
